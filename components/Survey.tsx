@@ -5,7 +5,6 @@ import {
 	Drawer,
 	Checkbox,
 	Radio,
-	TextInput,
 	Textarea,
 	Stack,
 	ScrollArea
@@ -18,6 +17,7 @@ import {
 } from "@tabler/icons-react";
 import { useFormik } from "formik";
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const PinDropMap = dynamic(() => import("@/components/PinDropMap"), {
 	ssr: false,
@@ -27,77 +27,6 @@ const PinDropMap = dynamic(() => import("@/components/PinDropMap"), {
 		</div>
 	)
 });
-
-const INCIDENT_TYPES = [
-	{ value: "earthquake", label: "Earthquake" },
-	{ value: "wildfire", label: "Wildfire" },
-	{ value: "flood", label: "Flood" },
-	{ value: "landslide", label: "Landslide" }
-];
-
-const INFRASTRUCTURE_OPTIONS = [
-	{
-		value: "residential",
-		label: "Residential Infrastructure",
-		description: "Houses and apartments"
-	},
-	{
-		value: "commercial",
-		label: "Commercial Infrastructure",
-		description: "Markets, malls, shops, hotels, banks, industries, etc."
-	},
-	{
-		value: "government",
-		label: "Government Building",
-		description:
-			"Administrative buildings, courthouses, police stations, fire stations, etc."
-	},
-	{
-		value: "utility",
-		label: "Utility Infrastructure",
-		description: "Water pumps, power plants, waste treatment plants, etc."
-	},
-	{
-		value: "transport",
-		label: "Transport and Communication Infrastructure",
-		description:
-			"Roads, cell towers, bridges, railway station, bus station, etc."
-	},
-	{
-		value: "community",
-		label: "Community Infrastructure",
-		description: "Schools, hospitals, community halls, public toilets, etc."
-	},
-	{
-		value: "recreation",
-		label: "Public Spaces / Recreation Infrastructure",
-		description: "Stadiums, playgrounds, religious buildings, etc."
-	},
-	{
-		value: "other",
-		label: "Other",
-		description: ""
-	}
-];
-
-const DAMAGE_OPTIONS = [
-	{
-		value: "minimal",
-		label: "Minimal / No damage",
-		description:
-			"Structurally sound and functional, showing only cosmetic or no visible damage"
-	},
-	{
-		value: "partial",
-		label: "Partially damaged",
-		description: "Repairable, and remains usable with caution"
-	},
-	{
-		value: "complete",
-		label: "Completely damaged",
-		description: "Structurally unsafe or destroyed"
-	}
-];
 
 function RequiredStar() {
 	return (
@@ -116,6 +45,32 @@ export default function Survey({
 	surveyOpen: boolean;
 	setSurveyOpen: (opt: boolean) => void;
 }) {
+	const { t } = useTranslation("common");
+
+	const INCIDENT_TYPES = [
+		{ value: "earthquake", label: t("incident.earthquake") },
+		{ value: "wildfire", label: t("incident.wildfire") },
+		{ value: "flood", label: t("incident.flood") },
+		{ value: "landslide", label: t("incident.landslide") }
+	];
+
+	const INFRASTRUCTURE_OPTIONS = [
+		{ value: "residential", label: t("infra.residential.label"), description: t("infra.residential.desc") },
+		{ value: "commercial", label: t("infra.commercial.label"), description: t("infra.commercial.desc") },
+		{ value: "government", label: t("infra.government.label"), description: t("infra.government.desc") },
+		{ value: "utility", label: t("infra.utility.label"), description: t("infra.utility.desc") },
+		{ value: "transport", label: t("infra.transport.label"), description: t("infra.transport.desc") },
+		{ value: "community", label: t("infra.community.label"), description: t("infra.community.desc") },
+		{ value: "recreation", label: t("infra.recreation.label"), description: t("infra.recreation.desc") },
+		{ value: "other", label: t("infra.other.label"), description: "" }
+	];
+
+	const DAMAGE_OPTIONS = [
+		{ value: "minimal", label: t("damage.minimal.label"), description: t("damage.minimal.desc") },
+		{ value: "partial", label: t("damage.partial.label"), description: t("damage.partial.desc") },
+		{ value: "complete", label: t("damage.complete.label"), description: t("damage.complete.desc") }
+	];
+
 	const formik = useFormik({
 		initialValues: {
 			incidentType: "earthquake",
@@ -164,7 +119,7 @@ export default function Survey({
 			onClose={() => setSurveyOpen(false)}
 			position="bottom"
 			size="90%"
-			title={<strong className="text-lg">Report Incident</strong>}
+			title={<strong className="text-lg">{t("survey.reportIncident")}</strong>}
 			styles={{
 				header: { padding: "1rem 1rem 0.5rem" },
 				body: {
@@ -203,11 +158,11 @@ export default function Survey({
 						{/* Q1 */}
 						<Stack gap="xs">
 							<p className="text-sm font-semibold">
-								Q1. Infrastructure affected
+								{t("survey.q1.title")}
 								<RequiredStar />
 							</p>
 							<span className="text-xs text-gray-500">
-								Select all that apply
+								{t("survey.q1.subtitle")}
 							</span>
 							<Checkbox.Group
 								value={formik.values.infrastructure}
@@ -234,7 +189,7 @@ export default function Survey({
 							{formik.values.infrastructure.includes("other") && (
 								<Textarea
 									name="otherText"
-									placeholder="Please specify"
+									placeholder={t("survey.pleaseSpecify")}
 									value={formik.values.otherText}
 									onChange={formik.handleChange}
 									size="sm"
@@ -248,11 +203,10 @@ export default function Survey({
 						{/* Q2 */}
 						<Stack gap="xs">
 							<p className="text-sm font-semibold">
-								Q2. Name(s) of Infrastructure
+								{t("survey.q2.title")}
 							</p>
 							<span className="text-xs text-gray-500">
-								Please provide the name of the infrastructure if present ex: The
-								Mirage, Westlands Primary
+								{t("survey.q2.subtitle")}
 							</span>
 							<Textarea
 								name="infraName"
@@ -268,11 +222,11 @@ export default function Survey({
 						{/* Q3 */}
 						<Stack gap="xs">
 							<p className="text-sm font-semibold">
-								Q3. Number of infrastructure affected
+								{t("survey.q3.title")}
 								<RequiredStar />
 							</p>
 							<span className="text-xs text-gray-500">
-								Give an approximate figure
+								{t("survey.q3.subtitle")}
 							</span>
 							<Radio.Group
 								value={formik.values.infraCount}
@@ -288,7 +242,7 @@ export default function Survey({
 						{/* Q4 */}
 						<Stack gap="xs">
 							<p className="text-sm font-semibold">
-								Q4. Level of damage
+								{t("survey.q4.title")}
 								<RequiredStar />
 							</p>
 							<Radio.Group
@@ -325,25 +279,18 @@ export default function Survey({
 						{/* Q5 */}
 						<Stack gap="xs">
 							<p className="text-sm font-semibold">
-								Q5. Debris
+								{t("survey.q5.title")}
 								<RequiredStar />
 							</p>
 							<span className="text-xs text-gray-500">
-								Is there any debris that requires clearing on or near the
-								infrastructure site?
+								{t("survey.q5.subtitle")}
 							</span>
 							<Radio.Group
 								value={formik.values.debris}
 								onChange={(v) => formik.setFieldValue("debris", v)}>
 								<Stack gap="sm">
-									<Radio
-										value="yes"
-										label="YES, there is debris in need of clearing"
-									/>
-									<Radio
-										value="no"
-										label="NO, there is no debris in need of clearing"
-									/>
+									<Radio value="yes" label={t("survey.q5.yes")} />
+									<Radio value="no" label={t("survey.q5.no")} />
 								</Stack>
 							</Radio.Group>
 						</Stack>
@@ -351,15 +298,16 @@ export default function Survey({
 						{/* Q6 — Location */}
 						<Stack gap="xs">
 							<p className="text-sm font-semibold">
-								Q6. Disaster Location
+								{t("survey.q6.title")}
 								<RequiredStar />
 							</p>
 							<span className="text-xs text-gray-500">
-								Tap on the map to drop a pin at the affected location
+								{t("survey.q6.subtitle")}
 							</span>
 							{formik.values.location && (
 								<span className="text-xs text-teal-600">
-									Pin set at {formik.values.location[0].toFixed(5)},{" "}
+									{t("survey.pinSetAt")}{" "}
+									{formik.values.location[0].toFixed(5)},{" "}
 									{formik.values.location[1].toFixed(5)}
 								</span>
 							)}
@@ -372,17 +320,19 @@ export default function Survey({
 						{/* Q7 — Description */}
 						<Stack gap="xs">
 							<p className="text-sm font-semibold">
-								Q7. Description{" "}
-								<span className="font-normal text-gray-400">(optional)</span>
+								{t("survey.q7.title")}{" "}
+								<span className="font-normal text-gray-400">
+									({t("survey.optional")})
+								</span>
 							</p>
 							<span className="text-xs text-gray-500">
-								Briefly describe what happened
+								{t("survey.describeHint")}
 							</span>
 							<Textarea
 								name="description"
 								value={formik.values.description}
 								onChange={formik.handleChange}
-								placeholder="e.g. The building collapsed after the tremor at around 6am..."
+								placeholder={t("survey.descriptionPlaceholder")}
 								size="sm"
 								autosize
 								minRows={3}
@@ -392,11 +342,11 @@ export default function Survey({
 						{/* Q8 — Photo Upload */}
 						<Stack gap="xs">
 							<p className="text-sm font-semibold">
-								Q8. Photo Upload
+								{t("survey.q8.title")}
 								<RequiredStar />
 							</p>
 							<span className="text-xs text-gray-500">
-								Photo of the damaged infrastructure
+								{t("survey.photoOfDamage")}
 							</span>
 
 							{/* Hidden file inputs */}
@@ -425,7 +375,7 @@ export default function Survey({
 											<img
 												src={p.preview}
 												alt={`photo-${i}`}
-												className="h-full w-full  object-cover"
+												className="h-full w-full object-cover"
 											/>
 											<button
 												type="button"
@@ -445,14 +395,14 @@ export default function Survey({
 									onClick={() => cameraRef.current?.click()}
 									className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 py-3 text-sm text-gray-500 hover:bg-gray-50">
 									<IconCamera size={16} />
-									Camera
+									{t("survey.camera")}
 								</button>
 								<button
 									type="button"
 									onClick={() => galleryRef.current?.click()}
 									className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 py-3 text-sm text-gray-500 hover:bg-gray-50">
 									<IconPhoto size={16} />
-									Gallery
+									{t("survey.gallery")}
 								</button>
 							</div>
 						</Stack>
@@ -460,7 +410,7 @@ export default function Survey({
 				</ScrollArea>
 
 				<Button type="submit" fullWidth color="dark" radius="xl" size="md">
-					Submit report
+					{t("survey.submitReport")}
 				</Button>
 			</form>
 		</Drawer>
