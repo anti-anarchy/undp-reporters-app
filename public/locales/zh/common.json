@@ -30,7 +30,10 @@
     },
     "q6": { "title": "问6. 灾害位置", "subtitle": "拖动地图将图钉定位到受影响位置" },
     "q7": { "title": "问7. 描述" },
-    "q8": { "title": "问8. 上传照片" }
+    "q8": { "title": "问8. 上传照片" },
+    "back": "返回",
+    "next": "下一步",
+    "stepOf": "第 {{current}} 步，共 {{total}} 步"
   },
   "infra": {
     "residential": { "label": "住宅基础设施", "desc": "房屋和公寓" },

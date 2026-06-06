@@ -30,7 +30,10 @@
     },
     "q6": { "title": "Q6. Localisation du sinistre", "subtitle": "Faites glisser la carte pour positionner l'épingle" },
     "q7": { "title": "Q7. Description" },
-    "q8": { "title": "Q8. Téléchargement de photos" }
+    "q8": { "title": "Q8. Téléchargement de photos" },
+    "back": "Retour",
+    "next": "Suivant",
+    "stepOf": "Étape {{current}} sur {{total}}"
   },
   "infra": {
     "residential": { "label": "Infrastructure résidentielle", "desc": "Maisons et appartements" },

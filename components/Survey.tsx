@@ -7,16 +7,21 @@ import {
 	Radio,
 	Textarea,
 	Stack,
-	ScrollArea
+	Text
 } from "@mantine/core";
+import { Carousel } from "@mantine/carousel";
+import { useRef } from "react";
+import type { EmblaCarouselType } from "embla-carousel";
 import {
 	IconAsterisk,
 	IconCamera,
 	IconPhoto,
-	IconX
+	IconX,
+	IconChevronLeft,
+	IconChevronRight
 } from "@tabler/icons-react";
 import { useFormik } from "formik";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 const PinDropMap = dynamic(() => import("@/components/PinDropMap"), {
@@ -38,6 +43,29 @@ function RequiredStar() {
 	);
 }
 
+function SlideShell({
+	title,
+	subtitle,
+	required,
+	children
+}: {
+	title: string;
+	subtitle?: string;
+	required?: boolean;
+	children: React.ReactNode;
+}) {
+	return (
+		<Stack gap="xs" px={4} py="xs" style={{ minHeight: 320 }}>
+			<p className="text-sm font-semibold">
+				{title}
+				{required && <RequiredStar />}
+			</p>
+			{subtitle && <span className="text-xs text-gray-500">{subtitle}</span>}
+			{children}
+		</Stack>
+	);
+}
+
 export default function Survey({
 	surveyOpen,
 	setSurveyOpen
@@ -46,6 +74,8 @@ export default function Survey({
 	setSurveyOpen: (opt: boolean) => void;
 }) {
 	const { t } = useTranslation("common");
+	const [embla, setEmbla] = useState<EmblaCarouselType | null>(null);
+	const [current, setCurrent] = useState(0);
 
 	const INCIDENT_TYPES = [
 		{ value: "earthquake", label: t("incident.earthquake") },
@@ -55,21 +85,63 @@ export default function Survey({
 	];
 
 	const INFRASTRUCTURE_OPTIONS = [
-		{ value: "residential", label: t("infra.residential.label"), description: t("infra.residential.desc") },
-		{ value: "commercial", label: t("infra.commercial.label"), description: t("infra.commercial.desc") },
-		{ value: "government", label: t("infra.government.label"), description: t("infra.government.desc") },
-		{ value: "utility", label: t("infra.utility.label"), description: t("infra.utility.desc") },
-		{ value: "transport", label: t("infra.transport.label"), description: t("infra.transport.desc") },
-		{ value: "community", label: t("infra.community.label"), description: t("infra.community.desc") },
-		{ value: "recreation", label: t("infra.recreation.label"), description: t("infra.recreation.desc") },
+		{
+			value: "residential",
+			label: t("infra.residential.label"),
+			description: t("infra.residential.desc")
+		},
+		{
+			value: "commercial",
+			label: t("infra.commercial.label"),
+			description: t("infra.commercial.desc")
+		},
+		{
+			value: "government",
+			label: t("infra.government.label"),
+			description: t("infra.government.desc")
+		},
+		{
+			value: "utility",
+			label: t("infra.utility.label"),
+			description: t("infra.utility.desc")
+		},
+		{
+			value: "transport",
+			label: t("infra.transport.label"),
+			description: t("infra.transport.desc")
+		},
+		{
+			value: "community",
+			label: t("infra.community.label"),
+			description: t("infra.community.desc")
+		},
+		{
+			value: "recreation",
+			label: t("infra.recreation.label"),
+			description: t("infra.recreation.desc")
+		},
 		{ value: "other", label: t("infra.other.label"), description: "" }
 	];
 
 	const DAMAGE_OPTIONS = [
-		{ value: "minimal", label: t("damage.minimal.label"), description: t("damage.minimal.desc") },
-		{ value: "partial", label: t("damage.partial.label"), description: t("damage.partial.desc") },
-		{ value: "complete", label: t("damage.complete.label"), description: t("damage.complete.desc") }
+		{
+			value: "minimal",
+			label: t("damage.minimal.label"),
+			description: t("damage.minimal.desc")
+		},
+		{
+			value: "partial",
+			label: t("damage.partial.label"),
+			description: t("damage.partial.desc")
+		},
+		{
+			value: "complete",
+			label: t("damage.complete.label"),
+			description: t("damage.complete.desc")
+		}
 	];
+
+	const TOTAL_SLIDES = 8;
 
 	const formik = useFormik({
 		initialValues: {
@@ -113,6 +185,10 @@ export default function Survey({
 		});
 	};
 
+	const prev = () => embla?.scrollPrev();
+	const next = () => embla?.scrollNext();
+	const isLast = current === TOTAL_SLIDES - 1;
+
 	return (
 		<Drawer
 			opened={surveyOpen}
@@ -133,14 +209,14 @@ export default function Survey({
 			<form
 				onSubmit={formik.handleSubmit}
 				className="flex h-full flex-col overflow-hidden">
-				{/* Incident type */}
+				{/* Incident type — always visible at top */}
 				<Select
 					data={INCIDENT_TYPES}
 					value={formik.values.incidentType}
 					onChange={(v) =>
 						formik.setFieldValue("incidentType", v ?? "earthquake")
 					}
-					mb="xl"
+					mb="md"
 					comboboxProps={{ withinPortal: true }}
 					styles={{
 						input: {
@@ -153,17 +229,39 @@ export default function Survey({
 					}}
 				/>
 
-				<ScrollArea style={{ flex: 1 }} pr={16} mb={16}>
-					<Stack gap="xl" pb="sm">
-						{/* Q1 */}
-						<Stack gap="xs">
-							<p className="text-sm font-semibold">
-								{t("survey.q1.title")}
-								<RequiredStar />
-							</p>
-							<span className="text-xs text-gray-500">
-								{t("survey.q1.subtitle")}
-							</span>
+				{/* Step indicator */}
+				<div className="mb-3 flex items-center justify-center px-1">
+					<div className="flex gap-1">
+						{Array.from({ length: TOTAL_SLIDES }).map((_, i) => (
+							<div
+								key={i}
+								className={`h-1.5 w-5 rounded-full transition-colors ${
+									i === current ? "bg-gray-800" : "bg-gray-200"
+								}`}
+							/>
+						))}
+					</div>
+				</div>
+
+				{/* Carousel */}
+				<Carousel
+					getEmblaApi={(api) => setEmbla(api)}
+					onSlideChange={(index) => setCurrent(index)}
+					withControls={false}
+					emblaOptions={{ watchDrag: false }}
+					style={{ flex: 1, overflow: "hidden" }}
+					styles={{
+						root: { height: "100%", display: "flex", flexDirection: "column" },
+						viewport: { flex: 1, overflow: "hidden" },
+						container: { height: "100%" },
+						slide: { overflowY: "auto" }
+					}}>
+					{/* Slide 1 — Q1: Infrastructure */}
+					<Carousel.Slide>
+						<SlideShell
+							title={t("survey.q1.title")}
+							subtitle={t("survey.q1.subtitle")}
+							required>
 							<Checkbox.Group
 								value={formik.values.infrastructure}
 								onChange={(v) => formik.setFieldValue("infrastructure", v)}>
@@ -198,36 +296,31 @@ export default function Survey({
 									minRows={2}
 								/>
 							)}
-						</Stack>
+						</SlideShell>
+					</Carousel.Slide>
 
-						{/* Q2 */}
-						<Stack gap="xs">
-							<p className="text-sm font-semibold">
-								{t("survey.q2.title")}
-							</p>
-							<span className="text-xs text-gray-500">
-								{t("survey.q2.subtitle")}
-							</span>
+					{/* Slide 2 — Q2: Infrastructure name */}
+					<Carousel.Slide>
+						<SlideShell
+							title={t("survey.q2.title")}
+							subtitle={t("survey.q2.subtitle")}>
 							<Textarea
 								name="infraName"
 								value={formik.values.infraName}
 								onChange={formik.handleChange}
 								size="sm"
-								ml="xl"
 								autosize
-								minRows={2}
+								minRows={3}
 							/>
-						</Stack>
+						</SlideShell>
+					</Carousel.Slide>
 
-						{/* Q3 */}
-						<Stack gap="xs">
-							<p className="text-sm font-semibold">
-								{t("survey.q3.title")}
-								<RequiredStar />
-							</p>
-							<span className="text-xs text-gray-500">
-								{t("survey.q3.subtitle")}
-							</span>
+					{/* Slide 3 — Q3: Count */}
+					<Carousel.Slide>
+						<SlideShell
+							title={t("survey.q3.title")}
+							subtitle={t("survey.q3.subtitle")}
+							required>
 							<Radio.Group
 								value={formik.values.infraCount}
 								onChange={(v) => formik.setFieldValue("infraCount", v)}>
@@ -237,14 +330,12 @@ export default function Survey({
 									))}
 								</Stack>
 							</Radio.Group>
-						</Stack>
+						</SlideShell>
+					</Carousel.Slide>
 
-						{/* Q4 */}
-						<Stack gap="xs">
-							<p className="text-sm font-semibold">
-								{t("survey.q4.title")}
-								<RequiredStar />
-							</p>
+					{/* Slide 4 — Q4: Damage level */}
+					<Carousel.Slide>
+						<SlideShell title={t("survey.q4.title")} required>
 							<Radio.Group
 								value={formik.values.damageLevel}
 								onChange={(v) => formik.setFieldValue("damageLevel", v)}>
@@ -274,17 +365,15 @@ export default function Survey({
 									))}
 								</Stack>
 							</Radio.Group>
-						</Stack>
+						</SlideShell>
+					</Carousel.Slide>
 
-						{/* Q5 */}
-						<Stack gap="xs">
-							<p className="text-sm font-semibold">
-								{t("survey.q5.title")}
-								<RequiredStar />
-							</p>
-							<span className="text-xs text-gray-500">
-								{t("survey.q5.subtitle")}
-							</span>
+					{/* Slide 5 — Q5: Debris */}
+					<Carousel.Slide>
+						<SlideShell
+							title={t("survey.q5.title")}
+							subtitle={t("survey.q5.subtitle")}
+							required>
 							<Radio.Group
 								value={formik.values.debris}
 								onChange={(v) => formik.setFieldValue("debris", v)}>
@@ -293,21 +382,18 @@ export default function Survey({
 									<Radio value="no" label={t("survey.q5.no")} />
 								</Stack>
 							</Radio.Group>
-						</Stack>
+						</SlideShell>
+					</Carousel.Slide>
 
-						{/* Q6 — Location */}
-						<Stack gap="xs">
-							<p className="text-sm font-semibold">
-								{t("survey.q6.title")}
-								<RequiredStar />
-							</p>
-							<span className="text-xs text-gray-500">
-								{t("survey.q6.subtitle")}
-							</span>
+					{/* Slide 6 — Q6: Location */}
+					<Carousel.Slide>
+						<SlideShell
+							title={t("survey.q6.title")}
+							subtitle={t("survey.q6.subtitle")}
+							required>
 							{formik.values.location && (
 								<span className="text-xs text-teal-600">
-									{t("survey.pinSetAt")}{" "}
-									{formik.values.location[0].toFixed(5)},{" "}
+									{t("survey.pinSetAt")} {formik.values.location[0].toFixed(5)},{" "}
 									{formik.values.location[1].toFixed(5)}
 								</span>
 							)}
@@ -315,19 +401,14 @@ export default function Survey({
 								value={formik.values.location}
 								onChange={(latlng) => formik.setFieldValue("location", latlng)}
 							/>
-						</Stack>
+						</SlideShell>
+					</Carousel.Slide>
 
-						{/* Q7 — Description */}
-						<Stack gap="xs">
-							<p className="text-sm font-semibold">
-								{t("survey.q7.title")}{" "}
-								<span className="font-normal text-gray-400">
-									({t("survey.optional")})
-								</span>
-							</p>
-							<span className="text-xs text-gray-500">
-								{t("survey.describeHint")}
-							</span>
+					{/* Slide 7 — Q7: Description */}
+					<Carousel.Slide>
+						<SlideShell
+							title={`${t("survey.q7.title")} (${t("survey.optional")})`}
+							subtitle={t("survey.describeHint")}>
 							<Textarea
 								name="description"
 								value={formik.values.description}
@@ -335,21 +416,17 @@ export default function Survey({
 								placeholder={t("survey.descriptionPlaceholder")}
 								size="sm"
 								autosize
-								minRows={3}
+								minRows={4}
 							/>
-						</Stack>
+						</SlideShell>
+					</Carousel.Slide>
 
-						{/* Q8 — Photo Upload */}
-						<Stack gap="xs">
-							<p className="text-sm font-semibold">
-								{t("survey.q8.title")}
-								<RequiredStar />
-							</p>
-							<span className="text-xs text-gray-500">
-								{t("survey.photoOfDamage")}
-							</span>
-
-							{/* Hidden file inputs */}
+					{/* Slide 8 — Q8: Photos */}
+					<Carousel.Slide>
+						<SlideShell
+							title={t("survey.q8.title")}
+							subtitle={t("survey.photoOfDamage")}
+							required>
 							<input
 								ref={cameraRef}
 								type="file"
@@ -367,7 +444,6 @@ export default function Survey({
 								onChange={handlePhotoSelect}
 							/>
 
-							{/* Thumbnails */}
 							{photos.length > 0 && (
 								<div className="flex flex-wrap gap-2">
 									{photos.map((p, i) => (
@@ -375,7 +451,7 @@ export default function Survey({
 											<img
 												src={p.preview}
 												alt={`photo-${i}`}
-												className="h-full w-full object-cover"
+												className="h-full w-full object-cover rounded"
 											/>
 											<button
 												type="button"
@@ -388,7 +464,6 @@ export default function Survey({
 								</div>
 							)}
 
-							{/* Upload buttons */}
 							<div className="flex gap-2">
 								<button
 									type="button"
@@ -405,13 +480,41 @@ export default function Survey({
 									{t("survey.gallery")}
 								</button>
 							</div>
-						</Stack>
-					</Stack>
-				</ScrollArea>
+						</SlideShell>
+					</Carousel.Slide>
+				</Carousel>
 
-				<Button type="submit" fullWidth color="dark" radius="xl" size="md">
-					{t("survey.submitReport")}
-				</Button>
+				{/* Navigation */}
+				<div className="mt-3 flex gap-2">
+					{current > 0 && (
+						<Button
+							type="button"
+							variant="default"
+							radius="xl"
+							fullWidth
+							size="md"
+							onClick={prev}
+							leftSection={<IconChevronLeft size={16} />}>
+							{t("survey.back")}
+						</Button>
+					)}
+					{!isLast ? (
+						<Button
+							type="button"
+							fullWidth
+							color="dark"
+							radius="xl"
+							size="md"
+							onClick={next}
+							rightSection={<IconChevronRight size={16} />}>
+							{t("survey.next")}
+						</Button>
+					) : (
+						<Button type="submit" fullWidth color="dark" radius="xl" size="md">
+							{t("survey.submitReport")}
+						</Button>
+					)}
+				</div>
 			</form>
 		</Drawer>
 	);

@@ -30,7 +30,10 @@
     },
     "q6": { "title": "P6. Ubicación del desastre", "subtitle": "Arrastra el mapa para posicionar el pin" },
     "q7": { "title": "P7. Descripción" },
-    "q8": { "title": "P8. Subir fotos" }
+    "q8": { "title": "P8. Subir fotos" },
+    "back": "Atrás",
+    "next": "Siguiente",
+    "stepOf": "Paso {{current}} de {{total}}"
   },
   "infra": {
     "residential": { "label": "Infraestructura residencial", "desc": "Casas y apartamentos" },

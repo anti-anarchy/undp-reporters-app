@@ -30,7 +30,10 @@
     },
     "q6": { "title": "Q6. Disaster Location", "subtitle": "Drag the map to position the pin at the affected location" },
     "q7": { "title": "Q7. Description" },
-    "q8": { "title": "Q8. Photo Upload" }
+    "q8": { "title": "Q8. Photo Upload" },
+    "back": "Back",
+    "next": "Next",
+    "stepOf": "Step {{current}} of {{total}}"
   },
   "infra": {
     "residential": { "label": "Residential Infrastructure", "desc": "Houses and apartments" },
