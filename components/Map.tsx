@@ -68,7 +68,7 @@ export default function Map() {
 			zoom={17}
 			style={{ height: "100%", width: "100%", zIndex: 10 }}>
 			<LayersControl position="topright">
-				<BaseLayer name="Streets">
+				<BaseLayer name="Streets" checked>
 					<TileLayer
 						url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 						attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -86,7 +86,7 @@ export default function Map() {
 						attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 					/>
 				</BaseLayer>
-				<BaseLayer checked name="Buildings">
+				<BaseLayer name="Buildings">
 					<TileLayer
 						url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
 						attribution='&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors'

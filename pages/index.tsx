@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { Select, ActionIcon, Button, Group } from "@mantine/core";
-import { IconPencil } from "@tabler/icons-react";
+import { Select, Button, Group } from "@mantine/core";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
@@ -53,23 +52,15 @@ export default function Home() {
 					/>
 				</div>
 
-				{/* Report heading + actions */}
-				<p className="mb-2 text-xl font-bold">{t("reportIncidence")}</p>
+				{/* Reporting */}
 				<Group mb="md" gap="sm" wrap="nowrap">
-					<ActionIcon
-						variant="filled"
-						size={44}
-						radius="xl"
-						style={{ background: "#d1d5db", color: "#374151", flexShrink: 0 }}>
-						<IconPencil size={18} />
-					</ActionIcon>
 					<Button
 						fullWidth
 						radius="xl"
 						size="md"
 						color="dark"
 						onClick={() => setSurveyOpen(true)}>
-						{t("fillSurvey")}
+						{t("reportIncidence")}
 					</Button>
 				</Group>
 			</div>

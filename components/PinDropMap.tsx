@@ -71,7 +71,7 @@ export default function PinDropMap({
 				style={{ height: "100%", width: "100%" }}
 				zoomControl={true}>
 				<LayersControl position="topright">
-					<BaseLayer name="Streets">
+					<BaseLayer checked name="Streets">
 						<TileLayer
 							url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 							attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -89,7 +89,7 @@ export default function PinDropMap({
 							attribution="&copy; OpenStreetMap contributors &copy; CARTO"
 						/>
 					</BaseLayer>
-					<BaseLayer checked name="Buildings">
+					<BaseLayer name="Buildings">
 						<TileLayer
 							url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
 							attribution='&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors'
