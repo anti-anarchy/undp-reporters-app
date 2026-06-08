@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.102.0",
     "@mantine/carousel": "^9.2.1",
     "@mantine/core": "^9.2.1",
     "@mantine/hooks": "^9.2.1",
@@ -27,6 +28,7 @@
     "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

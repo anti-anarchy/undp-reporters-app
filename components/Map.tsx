@@ -1,7 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, LayersControl, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { ActionIcon, Tooltip } from "@mantine/core";
+
+import ChatBot from "./ChatBot";
 
 const { BaseLayer } = LayersControl;
 
@@ -62,39 +65,58 @@ export function UserLocation() {
 }
 
 export default function Map() {
+	const [chatOpen, setChatOpen] = useState(false);
+
 	return (
-		<MapContainer
-			center={[-1.2921, 36.8219]}
-			zoom={17}
-			style={{ height: "100%", width: "100%", zIndex: 10 }}>
-			<LayersControl position="topright">
-				<BaseLayer name="Streets" checked>
-					<TileLayer
-						url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-						attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-					/>
-				</BaseLayer>
-				<BaseLayer name="Satellite">
-					<TileLayer
-						url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-						attribution="Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA"
-					/>
-				</BaseLayer>
-				<BaseLayer name="Dark">
-					<TileLayer
-						url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-						attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-					/>
-				</BaseLayer>
-				<BaseLayer name="Buildings">
-					<TileLayer
-						url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-						attribution='&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors'
-						maxZoom={17}
-					/>
-				</BaseLayer>
-			</LayersControl>
-			<UserLocation />
-		</MapContainer>
+		<div style={{ position: "relative", height: "100%", width: "100%" }}>
+			<MapContainer
+				center={[-1.2921, 36.8219]}
+				zoom={17}
+				style={{ height: "100%", width: "100%", zIndex: 10 }}>
+				<LayersControl position="topright">
+					<BaseLayer name="Streets" checked>
+						<TileLayer
+							url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+							attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+						/>
+					</BaseLayer>
+					<BaseLayer name="Satellite">
+						<TileLayer
+							url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+							attribution="Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA"
+						/>
+					</BaseLayer>
+					<BaseLayer name="Dark">
+						<TileLayer
+							url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+							attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+						/>
+					</BaseLayer>
+					<BaseLayer name="Buildings">
+						<TileLayer
+							url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+							attribution='&copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors'
+							maxZoom={17}
+						/>
+					</BaseLayer>
+				</LayersControl>
+				<UserLocation />
+			</MapContainer>
+
+			<Tooltip label="Crisis Assistant" position="left">
+				<ActionIcon
+					size={72}
+					radius={72}
+					color="dark"
+					variant="filled"
+					aria-label="Open crisis assistant"
+					onClick={() => setChatOpen(true)}
+					style={{ position: "absolute", bottom: 24, right: 16, zIndex: 100 }}>
+					<img src="/chatbot.gif" alt="chatbot" width={36} height={36} />
+				</ActionIcon>
+			</Tooltip>
+
+			<ChatBot opened={chatOpen} onClose={() => setChatOpen(false)} />
+		</div>
 	);
 }
